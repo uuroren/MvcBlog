@@ -3,10 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace fullmvc.Controllers
 {
-   
+
     public class WriterController : Controller
     {
-      
+
         public IActionResult Index()
         {
             return View();
@@ -16,7 +16,7 @@ namespace fullmvc.Controllers
         {
             return View();
         }
-      
+
         public IActionResult WriterMail()
         {
             return View();
