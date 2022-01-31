@@ -5,7 +5,10 @@ using EntityLayer.Concrete;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace fullmvc.Controllers
 {
@@ -33,7 +36,15 @@ namespace fullmvc.Controllers
         [HttpGet]
         public IActionResult BlogAdd()
         {
-            return View();
+            CategoryManager cm = new CategoryManager(new EfCategoryRepository());
+            List<SelectListItem> categoryListItems = (from x in cm.GetList() 
+                                                      select new SelectListItem
+                                                      {
+                                                          Text = x.CategoryName,
+                                                          Value = x.CategoryId.ToString()
+                                                      }).ToList();
+                ViewBag.cv = categoryListItems;
+                return View();
         }
         [HttpPost]
         public IActionResult BlogAdd(Blog p)
