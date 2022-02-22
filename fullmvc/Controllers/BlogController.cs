@@ -16,57 +16,89 @@ namespace fullmvc.Controllers
     public class BlogController : Controller
     {
         BlogManager bm = new BlogManager(new EfBlogRepository());
+        CategoryManager cm = new CategoryManager(new EfCategoryRepository());
+
         public IActionResult Index()
         {
-            var values=bm.GetBlogListWithCategory();
+            var values = bm.GetBlogListWithCategory();
             return View(values);
         }
         public IActionResult BlogReadAll(int id)
         {
-            ViewBag.i=id;
-            var values=bm.GetBlogById(id);
+            ViewBag.i = id;
+            var values = bm.GetBlogById(id);
             return View(values);
         }
 
         public IActionResult BlogListByWriter()
         {
-                 var values=bm.GetListWithCategoryByWriterBm(1);
-                return View(values);
+            var values = bm.GetListWithCategoryByWriterBm(1);
+            return View(values);
         }
         [HttpGet]
         public IActionResult BlogAdd()
         {
-            CategoryManager cm = new CategoryManager(new EfCategoryRepository());
-            List<SelectListItem> categoryListItems = (from x in cm.GetList() 
+            List<SelectListItem> categoryListItems = (from x in cm.GetList()
                                                       select new SelectListItem
                                                       {
                                                           Text = x.CategoryName,
                                                           Value = x.CategoryId.ToString()
                                                       }).ToList();
-                ViewBag.cv = categoryListItems;
-                return View();
+            ViewBag.cv = categoryListItems;
+            return View();
         }
         [HttpPost]
         public IActionResult BlogAdd(Blog p)
         {
             BlogValidator bv = new BlogValidator();
+            bv.Validate(p);
             ValidationResult results = bv.Validate(p);
             if (results.IsValid)
             {
                 p.BlogStatus = true;
-                p.BlogCreateDate=DateTime.Parse(DateTime.Now.ToShortDateString());
-                p.WriterId = 1;
+                p.BlogCreateDate = DateTime.Parse(DateTime.Now.ToShortDateString());
+                p.WriterId =1;
                 bm.TAdd(p);
-                return RedirectToAction("BlogListByWriter","Blog");
+                return RedirectToAction("BlogListByWriter", "Blog");
             }
             else
             {
-                foreach (var  item in results.Errors)
+                foreach (var item in results.Errors)
                 {
-                    ModelState.AddModelError(item.PropertyName,item.ErrorMessage);
+                    ModelState.AddModelError(item.PropertyName, item.ErrorMessage);
                 }
             }
             return View();
+        }
+        public IActionResult DeleteBlog(int id)
+        {
+            var blogvalue = bm.TGetById(id);
+            bm.TDelete(blogvalue);
+            return RedirectToAction("BlogListByWriter");
+        }
+
+        [HttpGet]
+        public IActionResult EditBlog(int id)
+        {
+            var blogvalue = bm.TGetById(id);
+            List<SelectListItem> categoryListItems = (from x in cm.GetList()
+                                                      select new SelectListItem
+                                                      {
+                                                          Text = x.CategoryName,
+                                                          Value = x.CategoryId.ToString()
+                                                      }).ToList();
+            ViewBag.cv = categoryListItems;
+            return View(blogvalue);
+        }
+
+        [HttpPost]
+        public IActionResult EditBlog(Blog p)
+        {
+            p.WriterId = 1;
+            p.BlogCreateDate = DateTime.Parse(DateTime.Now.ToShortDateString());
+            p.BlogStatus = true;
+            bm.TUpdate(p);
+            return RedirectToAction("BlogListByWriter");
         }
     }
 }

@@ -25,9 +25,9 @@
             <td>@(((DateTime)item.BlogCreateDate).ToString("dd-MMMM-yyyy"))</td>
             <td>@item.Category.CategoryName</td>
             <td>@item.BlogStatus</td>
-            <td><a href="#" class="btn btn-danger">Sil</a></td>
-            <td><a href="#" class="btn btn-warning">Düzenle </a></td>
+            <td><a href="/Blog/DeleteBlog/@item.BlogId" class="btn btn-danger">Sil</a></td>
+            <td><a href="/Blog/EditBlog/@item.BlogId" class="btn btn-warning">Düzenle </a></td>
         </tr>
     }
 </table>
-<a href="~/Views/Blog/BlogAdd" class="btn btn-primary">Yeni Blog Oluştur</a>
+<a href="/Blog/BlogAdd" class="btn btn-primary">Yeni Blog Oluştur</a>
